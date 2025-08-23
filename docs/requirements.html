@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen25 Challenge 8 项目需求分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d5aa0 0%, #1e3c72 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .section.overview {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-left: 5px solid #e17055;
+        }
+        
+        .section.functional {
+            background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+            border-left: 5px solid #00b894;
+        }
+        
+        .section.technical {
+            background: linear-gradient(135deg, #dda0dd, #98d8c8);
+            border-left: 5px solid #6c5ce7;
+        }
+        
+        .section.compliance {
+            background: linear-gradient(135deg, #fab1a0, #ff7675);
+            border-left: 5px solid #e84393;
+        }
+        
+        .section.implementation {
+            background: linear-gradient(135deg, #a29bfe, #74b9ff);
+            border-left: 5px solid #0984e3;
+        }
+        
+        .section.team {
+            background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+            border-left: 5px solid #e84393;
+        }
+        
+        .section h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section h2::before {
+            content: '';
+            width: 8px;
+            height: 30px;
+            background: currentColor;
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+        
+        .section h3 {
+            font-size: 1.3em;
+            color: #636e72;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .requirement-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .requirement-list li {
+            background: rgba(255,255,255,0.7);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0984e3;
+            transition: all 0.3s ease;
+        }
+        
+        .requirement-list li:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateX(5px);
+        }
+        
+        .requirement-list li::before {
+            content: "✓";
+            color: #00b894;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .process-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .process-step {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #74b9ff;
+            transition: all 0.3s ease;
+        }
+        
+        .process-step:hover {
+            transform: scale(1.05);
+            border-color: #0984e3;
+        }
+        
+        .process-step h4 {
+            color: #2d3436;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .timeline-item {
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #6c5ce7;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: counter(timeline);
+            counter-increment: timeline;
+            position: absolute;
+            left: -15px;
+            top: 20px;
+            background: #6c5ce7;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .timeline {
+            counter-reset: timeline;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .team-role {
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #fd79a8;
+        }
+        
+        .team-role h4 {
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+        
+        .highlight {
+            background: rgba(255,235,59,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 NextGen25 Challenge 8</h1>
+            <p>AI辅助Medicare Benefits Schedule账单系统 - 需求分析</p>
+        </div>
+        
+        <div class="content">
+            <!-- 项目概述 -->
+            <div class="section overview">
+                <h2>📋 项目概述</h2>
+                <p><strong>核心目标：</strong>设计并原型化一个系统，将全科医生(GP)在咨询过程中产生的<span class="highlight">自由文本或语音输入</span>自动转换为符合澳大利亚<span class="highlight">Medicare Benefits Schedule (MBS)</span>要求的文档与账单。</p>
+                <br>
+                <p><strong>解决的问题：</strong>GP在就诊时需要记录病历、开处方、写转诊信，同时还要进行医保报销编码。这个过程<span class="highlight">繁琐、容易出错、耗费时间</span>。</p>
+            </div>
+
+            <!-- 功能需求 -->
+            <div class="section functional">
+                <h2>🎯 功能需求</h2>
+                
+                <h3>核心功能：</h3>
+                <ul class="requirement-list">
+                    <li><strong>准确的top-N MBS推荐：</strong>从对话或文本中提取关键信息，推荐对应的医保报销项目</li>
+                    <li><strong>自动合规检查：</strong>在医生提交账单前进行规则校验(病程、诊断、时间要求等)</li>
+                    <li><strong>清晰解释：</strong>为每个推荐提供可理解的理由，保证透明度</li>
+                    <li><strong>自动生成账单：</strong>自动填好医保报销表格(claim payload)</li>
+                    <li><strong>临床文档生成：</strong>自动生成转诊信、护理计划等相关文档</li>
+                </ul>
+
+                <h3>处理流程：</h3>
+                <div class="process-flow">
+                    <div class="process-step">
+                        <h4>🎤 输入端</h4>
+                        <p>语音/自由文本<br>诊疗对话、病历摘要</p>
+                    </div>
+                    <div class="process-step">
+                        <h4>🧠 AI处理层</h4>
+                        <p>NLP模型提取关键词<br>匹配MBS编码<br>执行合规检查</p>
+                    </div>
+                    <div class="process-step">
+                        <h4>📄 输出端</h4>
+                        <p>推荐的医保项目<br>自动生成账单文件<br>临床文档</p>
+                    </div>
+                    <div class="process-step">
+                        <h4>👨‍⚕️用户确认</h4>
+                        <p>医生确认和签字<br>减少人工操作</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 技术需求 -->
+            <div class="section technical">
+                <h2>⚙️ 技术需求</h2>
+                
+                <h3>A. 输入处理层：</h3>
+                <ul class="requirement-list">
+                    <li>语音转文本 (STT): Whisper, Google Speech-to-Text</li>
+                    <li>NLP模型提取诊疗要点(症状、时长、病史)</li>
+                </ul>
+
+                <h3>B. AI推荐层：</h3>
+                <ul class="requirement-list">
+                    <li>NLP + 医保知识库 (MBS Codes DB)</li>
+                    <li>语义匹配诊疗信息与MBS项目</li>
+                    <li>输出Top-N推荐并附解释</li>
+                </ul>
+
+                <h3>C. 合规检查层：</h3>
+                <ul class="requirement-list">
+                    <li>规则引擎 (Rule Engine) + AI</li>
+                    <li>验证时间、患者条件、诊疗范围</li>
+                    <li>输出清晰理由</li>
+                </ul>
+
+                <h3>D. 文档生成层：</h3>
+                <ul class="requirement-list">
+                    <li>自动生成Claim Payload(可直接提交到Medicare)</li>
+                    <li>生成临床文档: 转诊信、护理计划、病历摘要</li>
+                    <li>可导出PDF/Word/HL7 FHIR格式</li>
+                </ul>
+
+                <h3>E. 用户交互层：</h3>
+                <ul class="requirement-list">
+                    <li>简洁界面: 输入区、推荐区、文档区</li>
+                    <li>医生只需确认 + 签字</li>
+                </ul>
+            </div>
+
+            <!-- 合规需求 -->
+            <div class="section compliance">
+                <h2>🛡️ 法规与伦理需求</h2>
+                <ul class="requirement-list">
+                    <li><strong>隐私保护：</strong>数据加密、本地存储或合规云端 (ISO 27001, HIPAA, Australian Privacy Act)</li>
+                    <li><strong>可解释性：</strong>每个推荐的MBS项目必须显示理由</li>
+                    <li><strong>避免过度收费：</strong>系统内置合规警告(红色提示)</li>
+                    <li><strong>审计追踪：</strong>自动保留日志，方便监管部门审查</li>
+                    <li><strong>透明机制：</strong>避免AI黑箱决策</li>
+                </ul>
+            </div>
+
+            <!-- 实施路线图 -->
+            <div class="section implementation">
+                <h2>🗓️ 实施路线图</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>阶段1: 概念验证 (1-2周)</h4>
+                        <p>用少量数据(模拟诊疗对话)，验证能否识别并推荐正确的MBS项目</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>阶段2: 功能原型 (3-4周)</h4>
+                        <p>搭建STT + NLP模型 + MBS匹配，增加合规检查规则</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>阶段3: 文档生成与UI (5-6周)</h4>
+                        <p>生成可提交的账单、临床文档，构建简洁的医生界面</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>阶段4: 测试与优化 (7-8周)</h4>
+                        <p>医生参与测试，收集反馈，优化推荐算法与合规警告机制</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 团队分工 -->
+            <div class="section team">
+                <h2>👥 团队分工建议</h2>
+                <div class="team-grid">
+                    <div class="team-role">
+                        <h4>AI/NLP工程师</h4>
+                        <p>语音识别、NLP模型、MBS项目匹配</p>
+                    </div>
+                    <div class="team-role">
+                        <h4>医疗顾问</h4>
+                        <p>医学与临床场景支持</p>
+                    </div>
+                    <div class="team-role">
+                        <h4>法律/合规专家</h4>
+                        <p>确保符合法规与伦理</p>
+                    </div>
+                    <div class="team-role">
+                        <h4>产品经理/UX设计师</h4>
+                        <p>界面简洁易用</p>
+                    </div>
+                    <div class="team-role">
+                        <h4>前端/后端开发</h4>
+                        <p>搭建原型系统，云端运行</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评审标准 -->
+            <div class="section overview">
+                <h2>🏆 评审标准</h2>
+                <ul class="requirement-list">
+                    <li><strong>创新性：</strong>AI如何独特解决MBS账单问题</li>
+                    <li><strong>准确性：</strong>推荐的MBS项目是否正确</li>
+                    <li><strong>合规性：</strong>是否防止误报、违规收费</li>
+                    <li><strong>用户体验：</strong>医生是否能快速上手、减少操作</li>
+                    <li><strong>落地潜力：</strong>能否与现有医疗系统集成</li>
+                    <li><strong>伦理性：</strong>是否有透明机制，避免AI黑箱决策</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
