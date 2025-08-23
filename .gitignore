@@ -147,3 +147,4 @@ data/mbs_codes/*.json
 !static/
 
 .env
+data

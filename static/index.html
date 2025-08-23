@@ -217,6 +217,7 @@
                     </select>
                 </div>
                 
+                <button onclick="generateTestData()">🎲 生成测试数据</button>
                 <button onclick="recommendMBS()">🔍 推荐MBS项目</button>
                 <button onclick="processConsultation()">📋 处理诊疗</button>
             </div>
@@ -276,6 +277,160 @@
     
     <script>
         const API_BASE = '/api/v1';
+        
+        // 测试数据模板
+        const testDataTemplates = {
+            consultations: [
+                {
+                    text: "Patient presenting with headache for 3 days, no fever. Blood pressure slightly elevated at 140/90. Standard consultation lasting 15 minutes. Prescribed paracetamol and advised rest. Will monitor blood pressure and follow up in 2 weeks.",
+                    age: 45,
+                    duration: 15,
+                    type: "standard"
+                },
+                {
+                    text: "75-year-old patient for annual health assessment. Review of medications, checking vitals, discussion about lifestyle. Consultation duration 35 minutes. Chronic conditions: Type 2 diabetes, hypertension. All parameters stable.",
+                    age: 75,
+                    duration: 35,
+                    type: "chronic-disease"
+                },
+                {
+                    text: "Patient experiencing anxiety and depression symptoms for past 2 months. Difficulty sleeping, loss of appetite. Mental health assessment completed. Consultation 25 minutes. Preparing mental health treatment plan and referral to psychologist.",
+                    age: 32,
+                    duration: 25,
+                    type: "mental-health"
+                },
+                {
+                    text: "Child with acute respiratory symptoms - cough, runny nose, mild fever 38.2°C. Examination shows clear chest, throat slightly red. Brief consultation 8 minutes. Diagnosed with upper respiratory tract infection. Advised rest and fluids.",
+                    age: 8,
+                    duration: 8,
+                    type: "standard"
+                },
+                {
+                    text: "Urgent after-hours consultation. Patient with severe chest pain, shortness of breath. ECG performed, shows normal rhythm. Blood pressure 150/95. Extended consultation 45 minutes. Referred to emergency department for further investigation.",
+                    age: 58,
+                    duration: 45,
+                    type: "urgent"
+                },
+                {
+                    text: "Routine diabetes management review. HbA1c results discussed, currently 7.2%. Foot examination performed. Diet and exercise counseling provided. Consultation 22 minutes. Medication adjusted, next review in 3 months.",
+                    age: 62,
+                    duration: 22,
+                    type: "chronic-disease"
+                },
+                {
+                    text: "Young adult with sports injury - twisted ankle during football. Examination shows moderate swelling, no fracture suspected. Brief consultation 10 minutes. RICE protocol advised, prescribed anti-inflammatory medication.",
+                    age: 24,
+                    duration: 10,
+                    type: "standard"
+                },
+                {
+                    text: "Mental health review for patient on antidepressant medication. Mood improved since last visit. Sleep pattern normalizing. Consultation 20 minutes. Continue current medication, follow up in 4 weeks.",
+                    age: 38,
+                    duration: 20,
+                    type: "mental-health"
+                }
+            ],
+            patientDetails: [
+                { name: "John Smith", medicare: "1234567890" },
+                { name: "Mary Johnson", medicare: "2345678901" },
+                { name: "Robert Chen", medicare: "3456789012" },
+                { name: "Sarah Williams", medicare: "4567890123" },
+                { name: "Michael Brown", medicare: "5678901234" },
+                { name: "Emma Davis", medicare: "6789012345" },
+                { name: "James Wilson", medicare: "7890123456" },
+                { name: "Lisa Anderson", medicare: "8901234567" }
+            ],
+            providerDetails: [
+                { number: "0000001A", name: "Dr. Smith" },
+                { number: "0000002B", name: "Dr. Johnson" },
+                { number: "0000003C", name: "Dr. Williams" },
+                { number: "0000004D", name: "Dr. Brown" }
+            ]
+        };
+        
+        function generateTestData() {
+            // 随机选择一个诊疗模板
+            const consultation = testDataTemplates.consultations[
+                Math.floor(Math.random() * testDataTemplates.consultations.length)
+            ];
+            
+            // 随机选择患者和医生信息
+            const patient = testDataTemplates.patientDetails[
+                Math.floor(Math.random() * testDataTemplates.patientDetails.length)
+            ];
+            const provider = testDataTemplates.providerDetails[
+                Math.floor(Math.random() * testDataTemplates.providerDetails.length)
+            ];
+            
+            // 填充表单
+            document.getElementById('consultation-text').value = consultation.text;
+            document.getElementById('patient-age').value = consultation.age;
+            document.getElementById('consultation-duration').value = consultation.duration;
+            document.getElementById('consultation-type').value = consultation.type;
+            
+            // 填充账单信息
+            document.getElementById('medicare-number').value = patient.medicare;
+            document.getElementById('patient-name').value = patient.name;
+            document.getElementById('provider-number').value = provider.number;
+            document.getElementById('provider-name').value = provider.name;
+            
+            // 根据诊疗类型建议MBS项目
+            let suggestedItems = [];
+            switch(consultation.type) {
+                case 'standard':
+                    if (consultation.duration < 10) {
+                        suggestedItems = ['3'];
+                    } else if (consultation.duration <= 20) {
+                        suggestedItems = ['23'];
+                    } else if (consultation.duration <= 40) {
+                        suggestedItems = ['36'];
+                    } else {
+                        suggestedItems = ['44'];
+                    }
+                    break;
+                case 'mental-health':
+                    suggestedItems = consultation.text.includes('treatment plan') ? ['721'] : ['723'];
+                    break;
+                case 'chronic-disease':
+                    if (consultation.age >= 75) {
+                        suggestedItems = ['703'];
+                    } else {
+                        suggestedItems = ['732', '23'];
+                    }
+                    break;
+                case 'urgent':
+                    suggestedItems = ['10997'];
+                    break;
+            }
+            
+            document.getElementById('mbs-items').value = suggestedItems.join(',');
+            
+            // 显示提示
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="result-item" style="background: #d4edda; border: 1px solid #c3e6cb;">
+                    <h4 style="color: #155724;">✅ 测试数据已生成</h4>
+                    <p><strong>场景：</strong>${getScenarioDescription(consultation.type)}</p>
+                    <p><strong>患者：</strong>${patient.name} (${consultation.age}岁)</p>
+                    <p><strong>医生：</strong>${provider.name}</p>
+                    <p><strong>诊疗时长：</strong>${consultation.duration}分钟</p>
+                    <p><strong>建议MBS项目：</strong>${suggestedItems.join(', ')}</p>
+                    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                        现在可以点击"推荐MBS项目"或"处理诊疗"按钮进行测试
+                    </p>
+                </div>
+            `;
+        }
+        
+        function getScenarioDescription(type) {
+            const descriptions = {
+                'standard': '标准诊疗',
+                'urgent': '紧急诊疗',
+                'mental-health': '心理健康评估',
+                'chronic-disease': '慢性病管理'
+            };
+            return descriptions[type] || '标准诊疗';
+        }
         
         async function recommendMBS() {
             const text = document.getElementById('consultation-text').value;
