@@ -1,0 +1,18 @@
+# Core Framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# Data Validation
+pydantic==2.5.0
+pydantic-settings==2.2.1
+
+# Environment Management
+python-dotenv==1.0.0
+
+# Logging
+loguru==0.7.2
+
+# Optional: For development
+httpx==0.25.2  # For testing API endpoints
+pytest==7.4.3  # For unit testing
+pytest-asyncio==0.21.1  # For async test support

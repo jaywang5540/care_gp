@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare GP Assistant - 测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d5aa0 0%, #1e3c72 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .section h2 {
+            color: #2d3436;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #764ba2;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result-box {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .result-item h4 {
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .confidence {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .high-confidence {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .medium-confidence {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .low-confidence {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .api-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+        
+        .api-info code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Medicare GP Assistant</h1>
+            <p>AI辅助Medicare Benefits Schedule账单系统 - 测试界面</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📝 诊疗输入</h2>
+                
+                <div class="api-info">
+                    <strong>API文档:</strong> <a href="/docs" target="_blank">/docs</a> | 
+                    <strong>健康检查:</strong> <a href="/api/v1/health" target="_blank">/api/v1/health</a>
+                </div>
+                
+                <div class="form-group">
+                    <label for="consultation-text">诊疗对话文本:</label>
+                    <textarea id="consultation-text" placeholder="输入诊疗对话内容...
+例如: Patient presenting with headache for 3 days, no fever. Standard consultation lasting 15 minutes. Prescribed paracetamol and advised rest."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="patient-age">患者年龄 (可选):</label>
+                    <input type="number" id="patient-age" placeholder="例如: 45">
+                </div>
+                
+                <div class="form-group">
+                    <label for="consultation-duration">诊疗时长 (分钟):</label>
+                    <input type="number" id="consultation-duration" placeholder="例如: 15" value="15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="consultation-type">诊疗类型:</label>
+                    <select id="consultation-type">
+                        <option value="standard">标准诊疗</option>
+                        <option value="urgent">紧急诊疗</option>
+                        <option value="mental-health">心理健康</option>
+                        <option value="chronic-disease">慢性病管理</option>
+                    </select>
+                </div>
+                
+                <button onclick="recommendMBS()">🔍 推荐MBS项目</button>
+                <button onclick="processConsultation()">📋 处理诊疗</button>
+            </div>
+            
+            <div class="section">
+                <h2>📊 推荐结果</h2>
+                <div id="results" class="result-box">
+                    <p style="color: #6c757d;">推荐结果将显示在这里...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section" style="grid-column: 1 / -1;">
+                <h2>💳 账单生成</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <div class="form-group">
+                            <label for="mbs-items">MBS项目编号 (逗号分隔):</label>
+                            <input type="text" id="mbs-items" placeholder="例如: 23,721">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="medicare-number">Medicare号码:</label>
+                            <input type="text" id="medicare-number" placeholder="10位数字">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="patient-name">患者姓名:</label>
+                            <input type="text" id="patient-name" placeholder="John Doe">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="form-group">
+                            <label for="provider-number">医生号码:</label>
+                            <input type="text" id="provider-number" placeholder="0000000A">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="provider-name">医生姓名:</label>
+                            <input type="text" id="provider-name" placeholder="Dr. Smith">
+                        </div>
+                        
+                        <button onclick="generateClaim()" style="margin-top: 20px;">💾 生成账单</button>
+                        <button onclick="checkCompliance()" style="margin-top: 20px; margin-left: 10px;">✅ 合规检查</button>
+                    </div>
+                </div>
+                
+                <div id="claim-results" class="result-box" style="margin-top: 20px;">
+                    <p style="color: #6c757d;">账单结果将显示在这里...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '/api/v1';
+        
+        async function recommendMBS() {
+            const text = document.getElementById('consultation-text').value;
+            if (!text) {
+                alert('请输入诊疗对话文本');
+                return;
+            }
+            
+            const data = {
+                consultation_text: text,
+                patient_age: parseInt(document.getElementById('patient-age').value) || null,
+                consultation_duration: parseInt(document.getElementById('consultation-duration').value) || null,
+                consultation_type: document.getElementById('consultation-type').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/medicare/recommend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                displayRecommendations(result.data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('推荐失败: ' + error.message);
+            }
+        }
+        
+        async function processConsultation() {
+            const text = document.getElementById('consultation-text').value;
+            if (!text) {
+                alert('请输入诊疗对话文本');
+                return;
+            }
+            
+            const data = {
+                consultation_input: {
+                    input_type: 'text',
+                    content: text,
+                    duration_minutes: parseInt(document.getElementById('consultation-duration').value) || null
+                },
+                auto_recommend_mbs: true,
+                generate_documents: true
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/consultation/process`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                displayProcessResult(result.data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('处理失败: ' + error.message);
+            }
+        }
+        
+        async function generateClaim() {
+            const mbsItems = document.getElementById('mbs-items').value.split(',').map(s => s.trim());
+            if (mbsItems.length === 0 || mbsItems[0] === '') {
+                alert('请输入MBS项目编号');
+                return;
+            }
+            
+            const data = {
+                mbs_items: mbsItems,
+                patient_details: {
+                    medicare_number: document.getElementById('medicare-number').value || '0000000000',
+                    name: document.getElementById('patient-name').value || 'Unknown Patient',
+                    dob: '1980-01-01'
+                },
+                provider_details: {
+                    provider_number: document.getElementById('provider-number').value || '0000000A',
+                    name: document.getElementById('provider-name').value || 'Dr. Provider'
+                },
+                consultation_date: new Date().toISOString()
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/medicare/generate-claim`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                displayClaimResult(result.data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('生成账单失败: ' + error.message);
+            }
+        }
+        
+        async function checkCompliance() {
+            const mbsItems = document.getElementById('mbs-items').value.split(',').map(s => s.trim());
+            if (mbsItems.length === 0 || mbsItems[0] === '') {
+                alert('请输入MBS项目编号');
+                return;
+            }
+            
+            const data = {
+                mbs_items: mbsItems,
+                consultation_details: {
+                    duration_minutes: parseInt(document.getElementById('consultation-duration').value) || 15
+                }
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/medicare/check-compliance`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                displayComplianceResult(result.data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('合规检查失败: ' + error.message);
+            }
+        }
+        
+        function displayRecommendations(data) {
+            const resultsDiv = document.getElementById('results');
+            if (!data || !data.recommendations) {
+                resultsDiv.innerHTML = '<p style="color: #dc3545;">没有推荐结果</p>';
+                return;
+            }
+            
+            let html = '<h3>MBS推荐项目:</h3>';
+            
+            data.recommendations.forEach(item => {
+                const confidenceClass = item.confidence > 0.8 ? 'high-confidence' : 
+                                       item.confidence > 0.6 ? 'medium-confidence' : 'low-confidence';
+                
+                html += `
+                    <div class="result-item">
+                        <h4>项目 ${item.item_number}: ${item.description}</h4>
+                        <p><span class="confidence ${confidenceClass}">置信度: ${(item.confidence * 100).toFixed(0)}%</span></p>
+                        <p><strong>推荐理由:</strong> ${item.reason}</p>
+                        ${item.compliance_notes ? `<p><strong>注意事项:</strong> ${item.compliance_notes.join(', ')}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            if (data.extracted_info) {
+                html += '<h3 style="margin-top: 20px;">提取的信息:</h3>';
+                html += '<div class="result-item">';
+                html += '<pre>' + JSON.stringify(data.extracted_info, null, 2) + '</pre>';
+                html += '</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function displayProcessResult(data) {
+            const resultsDiv = document.getElementById('results');
+            if (!data) {
+                resultsDiv.innerHTML = '<p style="color: #dc3545;">处理失败</p>';
+                return;
+            }
+            
+            let html = `
+                <h3>诊疗处理结果:</h3>
+                <div class="result-item">
+                    <p><strong>诊疗ID:</strong> ${data.consultation_id}</p>
+                    <p><strong>状态:</strong> ${data.status}</p>
+                </div>
+            `;
+            
+            if (data.mbs_recommendations && data.mbs_recommendations.length > 0) {
+                html += '<h3>推荐的MBS项目:</h3>';
+                data.mbs_recommendations.forEach(item => {
+                    html += `
+                        <div class="result-item">
+                            <p><strong>项目 ${item.item_number}:</strong> ${item.description}</p>
+                            <p>置信度: ${(item.confidence * 100).toFixed(0)}%</p>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (data.generated_documents && data.generated_documents.length > 0) {
+                html += '<h3>生成的文档:</h3>';
+                html += '<div class="result-item">';
+                data.generated_documents.forEach(doc => {
+                    html += `<p>📄 ${doc}</p>`;
+                });
+                html += '</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function displayClaimResult(data) {
+            const resultsDiv = document.getElementById('claim-results');
+            if (!data) {
+                resultsDiv.innerHTML = '<p style="color: #dc3545;">生成账单失败</p>';
+                return;
+            }
+            
+            let html = `
+                <h3>账单生成成功:</h3>
+                <div class="result-item">
+                    <p><strong>账单ID:</strong> ${data.claim_id}</p>
+                    <p><strong>总费用:</strong> $${data.total_fee.toFixed(2)}</p>
+                    <p><strong>医保补贴:</strong> $${data.total_benefit.toFixed(2)}</p>
+                    ${data.document_path ? `<p><strong>文档路径:</strong> ${data.document_path}</p>` : ''}
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function displayComplianceResult(data) {
+            const resultsDiv = document.getElementById('claim-results');
+            if (!data) {
+                resultsDiv.innerHTML = '<p style="color: #dc3545;">合规检查失败</p>';
+                return;
+            }
+            
+            const statusColor = data.is_compliant ? '#28a745' : '#dc3545';
+            
+            let html = `
+                <h3>合规检查结果:</h3>
+                <div class="result-item">
+                    <p style="color: ${statusColor}; font-weight: bold;">
+                        ${data.is_compliant ? '✅ 合规' : '❌ 不合规'}
+                    </p>
+                </div>
+            `;
+            
+            if (data.errors && data.errors.length > 0) {
+                html += '<h4>错误:</h4>';
+                data.errors.forEach(error => {
+                    html += `<div class="result-item" style="background: #f8d7da;"><p>${error}</p></div>`;
+                });
+            }
+            
+            if (data.warnings && data.warnings.length > 0) {
+                html += '<h4>警告:</h4>';
+                data.warnings.forEach(warning => {
+                    html += `<div class="result-item" style="background: #fff3cd;"><p>${warning}</p></div>`;
+                });
+            }
+            
+            if (data.suggestions && data.suggestions.length > 0) {
+                html += '<h4>建议:</h4>';
+                data.suggestions.forEach(suggestion => {
+                    html += `<div class="result-item" style="background: #d4edda;"><p>${suggestion}</p></div>`;
+                });
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
