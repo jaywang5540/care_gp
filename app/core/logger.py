@@ -50,7 +50,7 @@ log_path.mkdir(parents=True, exist_ok=True)
 logger.add(
     log_path / "app_{time:YYYY-MM-DD}.log",
     format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} | {message}",
-    level="DEBUG" if settings.DEBUG else "INFO",
+    level=settings.LOG_LEVEL,
     rotation=settings.LOG_ROTATION,
     retention=settings.LOG_RETENTION,
     encoding="utf-8",
@@ -74,8 +74,6 @@ logger.add(
 
 # 启动日志
 logger.info(f"🚀 {settings.PROJECT_NAME} v{settings.APP_VERSION} 启动")
-logger.info(f"📍 环境: {settings.ENVIRONMENT}")
-logger.info(f"🔧 调试模式: {'开启' if settings.DEBUG else '关闭'}")
 logger.info(f"📝 日志级别: {settings.LOG_LEVEL}")
 logger.info(f"📂 日志目录: {log_path.absolute()}")
 

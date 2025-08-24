@@ -38,8 +38,6 @@ async def health_check():
         "status": "healthy",
         "service": settings.APP_NAME,
         "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT,
-        "debug_mode": settings.DEBUG,
         "data_directories": data_dirs,
         "file_counts": file_counts,
         "api_prefix": settings.API_V1_PREFIX
@@ -63,10 +61,9 @@ async def system_info():
             "version": settings.APP_VERSION,
             "description": "AI辅助Medicare Benefits Schedule账单系统"
         },
-        "environment": {
-            "mode": settings.ENVIRONMENT,
-            "debug": settings.DEBUG,
-            "log_level": settings.LOG_LEVEL
+        "logging": {
+            "log_level": settings.LOG_LEVEL,
+            "log_path": str(Path(settings.LOG_PATH).absolute())
         },
         "paths": {
             "data": str(settings.DATA_PATH.absolute()),

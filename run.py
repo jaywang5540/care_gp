@@ -26,8 +26,7 @@ def parse_args():
     parser.add_argument(
         "--reload", 
         action="store_true",
-        default=True,
-        help="启用热重载 (默认: True)"
+        help="启用热重载"
     )
     parser.add_argument(
         "--workers", 
@@ -46,10 +45,11 @@ def main():
     print("🏥 Medicare GP Assistant")
     print("AI辅助Medicare Benefits Schedule账单系统")
     print("=" * 60)
-    print(f"📍 服务地址: http://{args.host}:{args.port}")
-    print(f"📖 API文档: http://{args.host}:{args.port}/docs")
-    print(f"🎨 测试界面: http://{args.host}:{args.port}/")
-    print(f"🔄 热重载: {'开启' if args.reload else '关闭'}")
+    print(f"📍 服务地址: http://localhost:{args.port}")
+    print(f"📖 API文档: http://localhost:{args.port}/docs")
+    print(f"🎨 测试界面: http://localhost:{args.port}/")
+    if args.reload:
+        print(f"🔄 热重载: 开启")
     print("=" * 60)
     print("按 Ctrl+C 停止服务器\n")
     

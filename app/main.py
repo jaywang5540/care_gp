@@ -94,13 +94,13 @@ async def global_exception_handler(request: Request, exc: Exception):
         f"异常: {type(exc).__name__}: {str(exc)}"
     )
     
-    # 返回友好的错误响应
+    # 返回错误响应
     return JSONResponse(
         status_code=500,
         content={
             "code": 500,
             "message": "内部服务器错误",
-            "detail": str(exc) if settings.DEBUG else "服务器处理请求时发生错误",
+            "detail": str(exc),
             "request_id": request_id
         }
     )
@@ -110,8 +110,6 @@ async def startup_event():
     """应用启动时的初始化"""
     logger.info("=" * 50)
     logger.info(f"🚀 {settings.PROJECT_NAME} 正在启动...")
-    logger.info(f"📍 环境: {settings.ENVIRONMENT}")
-    logger.info(f"🔧 调试模式: {'开启' if settings.DEBUG else '关闭'}")
     logger.info(f"📂 数据目录: {settings.DATA_PATH.absolute()}")
     logger.info("=" * 50)
 
@@ -150,6 +148,5 @@ async def health_check():
     return {
         "status": "healthy",
         "service": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT
+        "version": settings.APP_VERSION
     }

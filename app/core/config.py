@@ -12,15 +12,12 @@ class Settings(BaseSettings):
     APP_NAME: str = "Medicare GP Assistant"
     APP_VERSION: str = "1.0.0"
     PROJECT_NAME: str = "Care GP - AI Medicare Assistant"
-    ENVIRONMENT: str = "development"
     
     # 服务器配置
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    RELOAD: bool = True
     
     # 日志配置
-    DEBUG: bool = True
     LOG_LEVEL: str = "INFO"
     LOG_PATH: str = "logs"
     LOG_ROTATION: str = "00:00"
@@ -53,8 +50,5 @@ class Settings(BaseSettings):
 settings = Settings()
 
 # 打印配置信息
-if settings.DEBUG:
-    print(f"🚀 {settings.PROJECT_NAME}")
-    print(f"📍 环境: {settings.ENVIRONMENT}")
-    print(f"🔧 调试模式: {'开启' if settings.DEBUG else '关闭'}")
-    print(f"📂 数据目录: {settings.DATA_PATH.absolute()}")
+print(f"🚀 {settings.PROJECT_NAME}")
+print(f"📂 数据目录: {settings.DATA_PATH.absolute()}")
