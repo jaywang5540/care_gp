@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare GP Assistant - 专业版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #0066cc;
+            --primary-hover: #0052a3;
+            --success-color: #00a651;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 顶部导航 */
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        /* 左侧步骤栏 */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .sidebar-steps {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        
+        .sidebar-step {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .sidebar-step:hover {
+            background: var(--bg-color);
+        }
+        
+        .sidebar-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: transparent;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-step.active::before {
+            background: var(--primary-color);
+        }
+        
+        .sidebar-step.completed::before {
+            background: var(--success-color);
+        }
+        
+        .sidebar-step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-step.active .sidebar-step-number {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .sidebar-step.completed .sidebar-step-number {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+        
+        .sidebar-step.completed .sidebar-step-number {
+            font-size: 0;
+        }
+        
+        .sidebar-step.completed .sidebar-step-number::after {
+            content: '✓';
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-step-content {
+            flex: 1;
+        }
+        
+        .sidebar-step-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-step-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .sidebar-step.active .sidebar-step-title {
+            color: var(--primary-color);
+        }
+        
+        .sidebar-step.completed .sidebar-step-title {
+            color: var(--success-color);
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .navbar-brand .logo {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .navbar-info {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        
+        /* 主内容区 */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .step-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        /* Step 1: 诊疗记录 */
+        .patient-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .patient-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .patient-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .patient-details {
+            opacity: 0.9;
+        }
+        
+        .input-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-color);
+        }
+        
+        .consultation-textarea {
+            width: 100%;
+            min-height: 200px;
+            max-height: 300px;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+        
+        .consultation-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .voice-panel {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .voice-panel.active {
+            display: block;
+        }
+        
+        .record-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .record-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .record-button.recording {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+            70% { box-shadow: 0 0 0 30px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        
+        .meta-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .form-control {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        /* Step 2: 智能分析 */
+        .analysis-result {
+            margin-bottom: 2rem;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tag {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .tag.symptom {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .tag.diagnosis {
+            background: #cfe2ff;
+            color: #084298;
+        }
+        
+        .tag.treatment {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .mbs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .mbs-item {
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .mbs-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mbs-item.selected {
+            border-color: var(--success-color);
+            background: #f0fdf4;
+        }
+        
+        .mbs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .mbs-code {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.125rem;
+        }
+        
+        .mbs-price {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .mbs-description {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence-meter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00a651, #00c851);
+            transition: width 0.3s;
+        }
+        
+        .mbs-checkbox {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mbs-item.selected .mbs-checkbox {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .mbs-item.selected .mbs-checkbox::after {
+            content: '✓';
+            color: white;
+        }
+        
+        /* Step 3: 确认账单 */
+        .billing-summary {
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .billing-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .billing-line:last-child {
+            border-bottom: none;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        
+        .selected-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .selected-item {
+            padding: 1rem;
+            background: var(--bg-color);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Step 4: 生成文档 */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .doc-card {
+            padding: 1.25rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .doc-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .doc-card.generated {
+            border-color: var(--success-color);
+            background: #f0fdf4;
+        }
+        
+        .doc-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .doc-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .doc-status {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .doc-card.generated .doc-status {
+            color: var(--success-color);
+        }
+        
+        /* 步骤内操作按钮 */
+        .step-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--bg-color);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: #008a41;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 166, 81, 0.2);
+        }
+        
+        .step-info {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* 加载动画 */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-content {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="logo">🏥</div>
+            <span>Medicare GP Assistant</span>
+        </div>
+        <div class="navbar-info">
+            <span>👤 Dr. Smith (Provider: 0000001A)</span>
+            <span>📅 2024年1月15日</span>
+        </div>
+    </nav>
+    
+    <!-- 应用主体 -->
+    <div class="app-container">
+        <!-- 左侧步骤栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">诊疗流程</div>
+            </div>
+            <div class="sidebar-steps">
+                <div class="sidebar-step active" data-step="1">
+                    <div class="sidebar-step-number">1</div>
+                    <div class="sidebar-step-content">
+                        <div class="sidebar-step-title">记录诊疗</div>
+                        <div class="sidebar-step-desc">输入患者诊疗信息</div>
+                    </div>
+                </div>
+                <div class="sidebar-step" data-step="2">
+                    <div class="sidebar-step-number">2</div>
+                    <div class="sidebar-step-content">
+                        <div class="sidebar-step-title">智能分析</div>
+                        <div class="sidebar-step-desc">AI推荐MBS项目</div>
+                    </div>
+                </div>
+                <div class="sidebar-step" data-step="3">
+                    <div class="sidebar-step-number">3</div>
+                    <div class="sidebar-step-content">
+                        <div class="sidebar-step-title">确认账单</div>
+                        <div class="sidebar-step-desc">审核并确认费用</div>
+                    </div>
+                </div>
+                <div class="sidebar-step" data-step="4">
+                    <div class="sidebar-step-number">4</div>
+                    <div class="sidebar-step-content">
+                        <div class="sidebar-step-title">生成文档</div>
+                        <div class="sidebar-step-desc">创建必要文档</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主内容区 -->
+        <div class="main-container">
+            <div class="content-wrapper">
+        <!-- Step 1: 记录诊疗 -->
+        <div class="step-content active" id="step-1-content">
+            <div class="patient-banner">
+                <div class="patient-info">
+                    <div>
+                        <div class="patient-name">张明 (Zhang Ming)</div>
+                        <div class="patient-details">45岁 男性 | Medicare: 1234567890 | 联系电话: 0412 345 678</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.875rem; opacity: 0.9;">上次就诊</div>
+                        <div style="font-weight: 600;">2023年12月20日</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">诊疗记录</h2>
+                    <p class="card-subtitle">请详细记录本次诊疗内容，系统将自动识别关键信息</p>
+                </div>
+                <div class="card-body">
+                    <div class="input-tabs">
+                        <button class="tab active" onclick="switchTab('text')">文本输入</button>
+                        <button class="tab" onclick="switchTab('voice')">语音输入</button>
+                    </div>
+                    
+                    <div id="text-panel">
+                        <textarea class="consultation-textarea" 
+                                  placeholder="请输入诊疗内容...&#10;&#10;建议包含：&#10;• 主诉症状&#10;• 体格检查&#10;• 诊断结果&#10;• 治疗方案&#10;• 诊疗时长"
+                                  id="consultation-text"></textarea>
+                    </div>
+                    
+                    <div class="voice-panel" id="voice-panel">
+                        <button class="record-button" onclick="toggleRecording()">
+                            🎤
+                        </button>
+                        <h3>点击开始录音</h3>
+                        <p style="color: var(--text-secondary);">系统会自动转换语音为文本，支持医学术语识别</p>
+                    </div>
+                    
+                    <div class="meta-fields">
+                        <div class="form-group">
+                            <label class="form-label">诊疗时长（分钟）</label>
+                            <input type="number" class="form-control" value="15" id="duration">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">诊疗类型</label>
+                            <select class="form-control" id="consultation-type">
+                                <option value="standard">标准诊疗</option>
+                                <option value="long">长时诊疗</option>
+                                <option value="mental">心理健康评估</option>
+                                <option value="chronic">慢性病管理</option>
+                                <option value="urgent">紧急诊疗</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤操作按钮 -->
+                    <div class="step-actions">
+                        <button class="btn btn-primary" onclick="nextStep()">
+                            下一步：智能分析
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: 智能分析 -->
+        <div class="step-content" id="step-2-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">智能分析结果</h2>
+                    <p class="card-subtitle">系统已识别关键信息并推荐合适的MBS项目</p>
+                </div>
+                <div class="card-body">
+                    <div class="analysis-result">
+                        <h3 style="margin-bottom: 1rem;">识别的关键信息</h3>
+                        <div class="tags-container">
+                            <span class="tag symptom">🤒 头痛</span>
+                            <span class="tag symptom">🩸 血压偏高</span>
+                            <span class="tag diagnosis">📋 紧张性头痛</span>
+                            <span class="tag diagnosis">📋 高血压</span>
+                            <span class="tag treatment">💊 扑热息痛</span>
+                            <span class="tag treatment">📅 2周复查</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-result">
+                        <h3 style="margin-bottom: 1rem;">推荐的MBS项目</h3>
+                        <div class="mbs-list">
+                            <div class="mbs-item selected" onclick="toggleMBS(this)">
+                                <div class="mbs-checkbox"></div>
+                                <div class="mbs-header">
+                                    <span class="mbs-code">项目 23</span>
+                                    <span class="mbs-price">$40.85</span>
+                                </div>
+                                <div class="mbs-description">Level B 标准诊疗（6-20分钟）</div>
+                                <div class="confidence-meter">
+                                    <span style="font-size: 0.875rem;">推荐置信度</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 95%"></div>
+                                    </div>
+                                    <span style="font-weight: 600;">95%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mbs-item" onclick="toggleMBS(this)">
+                                <div class="mbs-checkbox"></div>
+                                <div class="mbs-header">
+                                    <span class="mbs-code">项目 10997</span>
+                                    <span class="mbs-price">$137.95</span>
+                                </div>
+                                <div class="mbs-description">紧急下班后诊疗</div>
+                                <div class="confidence-meter">
+                                    <span style="font-size: 0.875rem;">推荐置信度</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 30%"></div>
+                                    </div>
+                                    <span style="font-weight: 600;">30%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤操作按钮 -->
+                    <div class="step-actions">
+                        <button class="btn btn-secondary" onclick="previousStep()">
+                            上一步
+                        </button>
+                        <button class="btn btn-primary" onclick="nextStep()">
+                            下一步：确认账单
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: 确认账单 -->
+        <div class="step-content" id="step-3-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">账单确认</h2>
+                    <p class="card-subtitle">请确认账单信息无误后提交</p>
+                </div>
+                <div class="card-body">
+                    <div class="billing-summary">
+                        <div class="billing-line">
+                            <span>诊疗项目</span>
+                            <span>Level B (项目23)</span>
+                        </div>
+                        <div class="billing-line">
+                            <span>标准费用</span>
+                            <span>$40.85</span>
+                        </div>
+                        <div class="billing-line">
+                            <span>Medicare补贴 (100%)</span>
+                            <span>$40.85</span>
+                        </div>
+                        <div class="billing-line">
+                            <span>患者自付</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="billing-line">
+                            <strong>应收总额</strong>
+                            <strong>$40.85</strong>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem;">选中的MBS项目</h3>
+                    <div class="selected-items">
+                        <div class="selected-item">
+                            <div>
+                                <strong>项目 23</strong> - Level B 标准诊疗
+                            </div>
+                            <strong>$40.85</strong>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; margin-top: 2rem;">
+                        <strong style="color: #92400e;">⚠️ 合规提醒</strong>
+                        <p style="margin-top: 0.5rem; color: #92400e;">该患者24小时内无重复收费记录，符合Medicare规定</p>
+                    </div>
+                    
+                    <!-- 步骤操作按钮 -->
+                    <div class="step-actions">
+                        <button class="btn btn-secondary" onclick="previousStep()">
+                            上一步
+                        </button>
+                        <button class="btn btn-primary" onclick="nextStep()">
+                            下一步：生成文档
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 4: 生成文档 -->
+        <div class="step-content" id="step-4-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">文档生成</h2>
+                    <p class="card-subtitle">选择需要生成的文档，点击即可创建</p>
+                </div>
+                <div class="card-body">
+                    <div class="documents-grid">
+                        <div class="doc-card" onclick="generateDoc(this, 'claim')">
+                            <div class="doc-icon">📋</div>
+                            <div class="doc-title">Medicare账单</div>
+                            <div class="doc-status">点击生成</div>
+                        </div>
+                        
+                        <div class="doc-card" onclick="generateDoc(this, 'summary')">
+                            <div class="doc-icon">📄</div>
+                            <div class="doc-title">诊疗摘要</div>
+                            <div class="doc-status">点击生成</div>
+                        </div>
+                        
+                        <div class="doc-card" onclick="generateDoc(this, 'referral')">
+                            <div class="doc-icon">✉️</div>
+                            <div class="doc-title">转诊信</div>
+                            <div class="doc-status">点击生成</div>
+                        </div>
+                        
+                        <div class="doc-card" onclick="generateDoc(this, 'care-plan')">
+                            <div class="doc-icon">📊</div>
+                            <div class="doc-title">护理计划</div>
+                            <div class="doc-status">点击生成</div>
+                        </div>
+                        
+                        <div class="doc-card" onclick="generateDoc(this, 'prescription')">
+                            <div class="doc-icon">💊</div>
+                            <div class="doc-title">处方单</div>
+                            <div class="doc-status">点击生成</div>
+                        </div>
+                        
+                        <div class="doc-card" onclick="generateDoc(this, 'certificate')">
+                            <div class="doc-icon">🏥</div>
+                            <div class="doc-title">病假证明</div>
+                            <div class="doc-status">点击生成</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤操作按钮 -->
+                    <div class="step-actions">
+                        <button class="btn btn-secondary" onclick="previousStep()">
+                            上一步
+                        </button>
+                        <button class="btn btn-success" onclick="complete()">
+                            完成并提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div> <!-- 关闭 content-wrapper -->
+        </div> <!-- 关闭 main-container -->
+    </div> <!-- 关闭 app-container -->
+    
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loading">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>正在处理，请稍候...</p>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        let consultationData = {};
+        let selectedMBS = ['23'];
+        
+        // 切换输入模式
+        function switchTab(mode) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (mode === 'text') {
+                document.getElementById('text-panel').style.display = 'block';
+                document.getElementById('voice-panel').classList.remove('active');
+            } else {
+                document.getElementById('text-panel').style.display = 'none';
+                document.getElementById('voice-panel').classList.add('active');
+            }
+        }
+        
+        // 录音控制
+        let isRecording = false;
+        function toggleRecording() {
+            const btn = event.target;
+            isRecording = !isRecording;
+            
+            if (isRecording) {
+                btn.classList.add('recording');
+                btn.innerHTML = '⏹️';
+                // 模拟3秒后自动停止
+                setTimeout(() => {
+                    if (isRecording) {
+                        btn.classList.remove('recording');
+                        btn.innerHTML = '🎤';
+                        isRecording = false;
+                        
+                        // 模拟语音转文本
+                        document.getElementById('consultation-text').value = 
+                            "患者主诉头痛3天，疼痛为搏动性，位于前额部。无发热，无恶心呕吐。" +
+                            "血压测量140/90 mmHg，偏高。既往有高血压病史。" +
+                            "诊断：紧张性头痛，高血压。" +
+                            "处方：扑热息痛，建议2周后复查血压。";
+                        
+                        // 切回文本模式
+                        document.getElementById('text-panel').style.display = 'block';
+                        document.getElementById('voice-panel').classList.remove('active');
+                        document.querySelectorAll('.tab')[0].classList.add('active');
+                        document.querySelectorAll('.tab')[1].classList.remove('active');
+                    }
+                }, 3000);
+            } else {
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤';
+            }
+        }
+        
+        // 切换MBS项目选择
+        function toggleMBS(element) {
+            element.classList.toggle('selected');
+        }
+        
+        // 生成文档
+        function generateDoc(element, type) {
+            if (element.classList.contains('generated')) return;
+            
+            // 显示加载
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                element.classList.add('generated');
+                element.querySelector('.doc-status').textContent = '✓ 已生成';
+                element.querySelector('.doc-status').style.color = 'var(--success-color)';
+            }, 1000);
+        }
+        
+        // 下一步
+        function nextStep() {
+            if (currentStep === 1) {
+                // 验证输入
+                const text = document.getElementById('consultation-text').value;
+                if (!text) {
+                    alert('请先输入诊疗内容');
+                    return;
+                }
+                
+                // 保存数据
+                consultationData = {
+                    text: text,
+                    duration: document.getElementById('duration').value,
+                    type: document.getElementById('consultation-type').value
+                };
+                
+                // 显示加载动画
+                showLoading();
+                
+                // 模拟分析
+                setTimeout(() => {
+                    hideLoading();
+                    goToStep(2);
+                }, 1500);
+            } else if (currentStep === 2) {
+                goToStep(3);
+            } else if (currentStep === 3) {
+                goToStep(4);
+            }
+        }
+        
+        // 上一步
+        function previousStep() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        }
+        
+        // 跳转到指定步骤
+        function goToStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step-${currentStep}-content`).classList.remove('active');
+            
+            // 更新步骤指示器
+            document.querySelector(`.sidebar-step[data-step="${currentStep}"]`).classList.remove('active');
+            if (step > currentStep) {
+                document.querySelector(`.sidebar-step[data-step="${currentStep}"]`).classList.add('completed');
+            }
+            
+            // 显示新步骤内容
+            currentStep = step;
+            document.getElementById(`step-${currentStep}-content`).classList.add('active');
+            document.querySelector(`.sidebar-step[data-step="${currentStep}"]`).classList.add('active');
+        }
+        
+        // 完成提交
+        function complete() {
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                alert('✅ 账单已成功提交到Medicare系统！');
+                
+                // 重置表单
+                location.reload();
+            }, 2000);
+        }
+        
+        // 显示加载
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+        
+        // 隐藏加载
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+        
+        // 点击步骤指示器跳转（仅允许跳转到已完成的步骤）
+        document.querySelectorAll('.step').forEach(step => {
+            step.addEventListener('click', function() {
+                const targetStep = parseInt(this.dataset.step);
+                if (this.classList.contains('completed') || targetStep < currentStep) {
+                    goToStep(targetStep);
+                }
+            });
+        });
+        
+        // 为步骤指示器添加点击事件
+        document.querySelectorAll('.sidebar-step').forEach(step => {
+            step.addEventListener('click', function() {
+                const targetStep = parseInt(this.dataset.step);
+                if (targetStep <= currentStep || targetStep === currentStep + 1) {
+                    goToStep(targetStep);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

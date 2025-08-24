@@ -16,3 +16,6 @@ loguru==0.7.2
 httpx==0.25.2  # For testing API endpoints
 pytest==7.4.3  # For unit testing
 pytest-asyncio==0.21.1  # For async test support
+
+# PDF Export
+playwright==1.40.0  # For HTML to PDF conversion with screen styles

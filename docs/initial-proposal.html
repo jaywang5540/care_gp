@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare GP Assistant - Initial Proposal | NextGen25 Challenge 8</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #00a651;
+            --accent-color: #ff6b35;
+            --dark-bg: #1a1a2e;
+            --light-bg: #f8f9fa;
+            --text-dark: #212529;
+            --text-light: #6c757d;
+            --border-color: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: #ffffff;
+        }
+        
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+        
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Executive Summary */
+        .executive-summary {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .executive-summary::before {
+            content: '🎯';
+            position: absolute;
+            top: -20px;
+            left: 40px;
+            font-size: 40px;
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .executive-summary h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        .key-innovation {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid var(--accent-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Section Styles */
+        .section {
+            background: white;
+            margin: 40px 0;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section h3 {
+            color: var(--text-dark);
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        /* Problem Analysis */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .problem-card {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid var(--danger);
+            transition: all 0.3s ease;
+        }
+        
+        .problem-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .problem-card h4 {
+            color: var(--danger);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .problem-card .stat {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin: 10px 0;
+        }
+        
+        /* Workflow Steps */
+        .workflow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 1200px) {
+            .workflow {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .workflow {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .workflow-step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .workflow-step .step-number {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            color: var(--primary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .workflow-step h4 {
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .workflow-step ul {
+            list-style: none;
+            text-align: left;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .workflow-step li {
+            margin: 12px 0;
+            padding-left: 28px;
+            position: relative;
+            font-size: 0.95em;
+        }
+        
+        .workflow-step li::before {
+            content: '✓';
+            position: absolute;
+            left: 8px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--light-bg);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+        
+        .architecture-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid var(--border-color);
+        }
+        
+        .arch-layer {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .arch-layer::after {
+            content: '↓';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+        
+        .arch-layer:last-child::after {
+            display: none;
+        }
+        
+        .arch-components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 10px 0;
+        }
+        
+        .arch-component {
+            background: white;
+            padding: 12px 8px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--text-dark);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.3;
+        }
+        
+        .arch-component strong {
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        /* Status Section */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .status-card h4 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 0;
+            font-size: 1.2em;
+        }
+        
+        .status-card.completed h4 {
+            background: linear-gradient(135deg, #00a651 0%, #00c851 100%);
+        }
+        
+        .status-card.in-progress h4 {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        }
+        
+        .status-items {
+            padding: 20px;
+        }
+        
+        .status-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            font-size: 1.2em;
+        }
+        
+        /* Demo Scenarios */
+        .scenarios {
+            display: grid;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .scenario {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .scenario h4 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .scenario-input {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid var(--border-color);
+        }
+        
+        .scenario-output {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid var(--success);
+        }
+        
+        .scenario-output .label {
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        /* Innovation Highlights */
+        .innovations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .innovation-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .innovation-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .innovation-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .innovation-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .innovation-card ul {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .innovation-card li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .innovation-card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        /* Metrics */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .metric .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .metric .label {
+            opacity: 0.9;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Timeline */
+        .timeline {
+            margin: 30px 0;
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-color);
+        }
+        
+        .timeline-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 25px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+        
+        .timeline-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .timeline-item .week {
+            display: inline-block;
+            background: var(--light-bg);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        /* Success Factors */
+        .success-factors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .success-factor {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .success-factor::before {
+            content: attr(data-number);
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            font-size: 4em;
+            font-weight: bold;
+            opacity: 0.1;
+        }
+        
+        .success-factor h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .team-member {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .team-member:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .team-member .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .team-member h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .cta-section .promise {
+            font-size: 1.5em;
+            margin: 20px 0;
+            font-weight: 300;
+        }
+        
+        .cta-metrics {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .cta-metric {
+            text-align: center;
+        }
+        
+        .cta-metric .value {
+            font-size: 3em;
+            font-weight: bold;
+        }
+        
+        .cta-metric .label {
+            opacity: 0.9;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        
+        .footer .submission-info {
+            margin-bottom: 20px;
+        }
+        
+        .footer .submission-info h3 {
+            color: var(--warning);
+            margin-bottom: 10px;
+        }
+        
+        .footer .contact {
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-metrics {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .section {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            body {
+                font-size: 11pt;
+            }
+        }
+        
+        /* Special Effects */
+        .highlight {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffb300 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+        
+        .badge.success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .badge.warning {
+            background: var(--warning);
+            color: var(--text-dark);
+        }
+        
+        .badge.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <h1>🏥 Medicare GP Assistant</h1>
+            <p class="subtitle">AI-Powered Medicare Benefits Schedule Billing System</p>
+            <span class="badge">NextGen25 Challenge 8 - Initial Proposal</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Executive Summary -->
+        <div class="executive-summary">
+            <h2>Executive Summary</h2>
+            <p>We are developing <strong>Medicare GP Assistant</strong>, an AI-powered system that transforms GP consultations into Medicare-compliant billing in under <span class="highlight">30 seconds</span>. Our solution addresses the critical pain point where Australian GPs spend 30% of their time on administrative tasks instead of patient care.</p>
+            
+            <div class="key-innovation">
+                <strong>🚀 Key Innovation:</strong> Natural language processing of consultation notes → Automatic MBS code recommendation → Compliant billing generation
+            </div>
+        </div>
+        
+        <!-- Problem Analysis -->
+        <section class="section">
+            <h2>🔍 Problem Analysis</h2>
+            
+            <h3>Current Challenges for Australian GPs:</h3>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h4>⏱️ Time Drain</h4>
+                    <div class="stat">15+ min</div>
+                    <p>Per consultation on billing administration</p>
+                </div>
+                <div class="problem-card">
+                    <h4>📚 Complexity</h4>
+                    <div class="stat">900+</div>
+                    <p>MBS item codes with complex rules</p>
+                </div>
+                <div class="problem-card">
+                    <h4>❌ Error Rate</h4>
+                    <div class="stat">High</div>
+                    <p>Of claims rejected due to coding errors</p>
+                </div>
+                <div class="problem-card">
+                    <h4>⚠️ Compliance Risk</h4>
+                    <div class="stat">Costly</div>
+                    <p>Annual revenue loss from rejected claims</p>
+                </div>
+            </div>
+            
+            <h3>Impact on Healthcare Delivery:</h3>
+            <ul style="margin-top: 20px; list-style: none;">
+                <li>📉 GPs see 4-5 fewer patients daily due to admin work</li>
+                <li>💰 Significant annual revenue loss from rejected claims</li>
+                <li>😰 Increased stress and burnout among healthcare providers</li>
+                <li>⏳ Patients wait longer for appointments</li>
+            </ul>
+        </section>
+        
+        <!-- Solution -->
+        <section class="section">
+            <h2>💡 Our Solution: 4-Step Intelligent Workflow</h2>
+            
+            <div class="workflow">
+                <div class="workflow-step">
+                    <span class="step-number">1</span>
+                    <h4>Smart Input</h4>
+                    <ul>
+                        <li>Voice Recognition</li>
+                        <li>Text Input</li>
+                        <li>Auto-extraction</li>
+                    </ul>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number">2</span>
+                    <h4>AI Analysis</h4>
+                    <ul>
+                        <li>NLP Processing</li>
+                        <li>MBS Matching</li>
+                        <li>Confidence Scoring</li>
+                    </ul>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number">3</span>
+                    <h4>Compliance</h4>
+                    <ul>
+                        <li>Rule Validation</li>
+                        <li>Duplicate Check</li>
+                        <li>Risk Assessment</li>
+                    </ul>
+                </div>
+                <div class="workflow-step">
+                    <span class="step-number">4</span>
+                    <h4>Documents</h4>
+                    <ul>
+                        <li>Medicare Claims</li>
+                        <li>Clinical Notes</li>
+                        <li>Referral Letters</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Technical Architecture -->
+        <section class="section">
+            <h2>⚙️ Technical Architecture</h2>
+            
+            <div class="architecture">
+                <h3 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);">5-Layer System Architecture</h3>
+                
+                <div class="arch-layer">
+                    <strong>1. INPUT PROCESSING LAYER</strong>
+                    <div class="arch-components">
+                        <div class="arch-component"><strong>Voice Input</strong><br>Whisper API</div>
+                        <div class="arch-component"><strong>Text Input</strong><br>Free-form Notes</div>
+                        <div class="arch-component"><strong>NLP Extraction</strong><br>Symptoms & Duration</div>
+                    </div>
+                </div>
+                
+                <div class="arch-layer">
+                    <strong>2. AI RECOMMENDATION LAYER</strong>
+                    <div class="arch-components">
+                        <div class="arch-component"><strong>MBS Database</strong><br>900+ Item Codes</div>
+                        <div class="arch-component"><strong>Semantic Matching</strong><br>Clinical → MBS</div>
+                        <div class="arch-component"><strong>Top-N Ranking</strong><br>With Confidence</div>
+                    </div>
+                </div>
+                
+                <div class="arch-layer">
+                    <strong>3. COMPLIANCE CHECK LAYER</strong>
+                    <div class="arch-components">
+                        <div class="arch-component"><strong>Rule Engine</strong><br>Medicare Rules</div>
+                        <div class="arch-component"><strong>Time Validation</strong><br>Duration Check</div>
+                        <div class="arch-component"><strong>Eligibility</strong><br>Patient Criteria</div>
+                        <div class="arch-component"><strong>Risk Alerts</strong><br>Audit Warnings</div>
+                    </div>
+                </div>
+                
+                <div class="arch-layer">
+                    <strong>4. DOCUMENT GENERATION LAYER</strong>
+                    <div class="arch-components">
+                        <div class="arch-component"><strong>Claim Payload</strong><br>Medicare Format</div>
+                        <div class="arch-component"><strong>Clinical Docs</strong><br>Referrals/Plans</div>
+                        <div class="arch-component"><strong>Export Formats</strong><br>PDF/Word/FHIR</div>
+                    </div>
+                </div>
+                
+                <div class="arch-layer">
+                    <strong>5. USER INTERFACE LAYER</strong>
+                    <div class="arch-components">
+                        <div class="arch-component"><strong>Input Area</strong><br>Voice/Text Entry</div>
+                        <div class="arch-component"><strong>Review Panel</strong><br>MBS Selection</div>
+                        <div class="arch-component"><strong>Confirmation</strong><br>One-Click Submit</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <h3>Core Technology Stack</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">🎯 Key Technologies</h4>
+                        <ul style="list-style: none; padding: 0; font-size: 0.95em;">
+                            <li>• <strong>Whisper:</strong> Speech-to-Text</li>
+                            <li>• <strong>FastAPI:</strong> Backend Framework</li>
+                            <li>• <strong>PostgreSQL:</strong> Data Storage</li>
+                            <li>• <strong>React:</strong> User Interface</li>
+                        </ul>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid var(--secondary-color);">
+                        <h4 style="color: var(--secondary-color); margin-bottom: 10px;">📊 Performance Targets</h4>
+                        <ul style="list-style: none; padding: 0; font-size: 0.95em;">
+                            <li>• <strong>Fast:</strong> Sub-minute Processing</li>
+                            <li>• <strong>High:</strong> MBS Match Accuracy</li>
+                            <li>• <strong>Comprehensive:</strong> Rule Validation</li>
+                            <li>• <strong>Reliable:</strong> Enterprise Uptime</li>
+                        </ul>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid var(--warning);">
+                        <h4 style="color: var(--warning); margin-bottom: 10px;">🔒 Security & Standards</h4>
+                        <ul style="list-style: none; padding: 0; font-size: 0.95em;">
+                            <li>• <strong>Privacy Act:</strong> Compliant</li>
+                            <li>• <strong>Data:</strong> AES-256 Encrypted</li>
+                            <li>• <strong>FHIR:</strong> HL7 Standard</li>
+                            <li>• <strong>Audit:</strong> Full Traceability</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 25px; text-align: center;">📈 Data Flow Process</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between; position: relative; padding: 20px 0;">
+                    <!-- Step 1 -->
+                    <div style="flex: 1; text-align: center; position: relative;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">1</div>
+                        <h4 style="color: var(--primary-color); margin: 5px 0; font-size: 0.95em;">Input</h4>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0;">GP speaks or<br>types notes</p>
+                    </div>
+                    
+                    <div style="flex: 0 0 30px; display: flex; align-items: center; color: var(--primary-color); font-size: 1.5em;">→</div>
+                    
+                    <!-- Step 2 -->
+                    <div style="flex: 1; text-align: center; position: relative;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">2</div>
+                        <h4 style="color: var(--primary-color); margin: 5px 0; font-size: 0.95em;">Process</h4>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0;">AI extracts<br>key info</p>
+                    </div>
+                    
+                    <div style="flex: 0 0 30px; display: flex; align-items: center; color: var(--primary-color); font-size: 1.5em;">→</div>
+                    
+                    <!-- Step 3 -->
+                    <div style="flex: 1; text-align: center; position: relative;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">3</div>
+                        <h4 style="color: var(--primary-color); margin: 5px 0; font-size: 0.95em;">Match</h4>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0;">Find MBS<br>items</p>
+                    </div>
+                    
+                    <div style="flex: 0 0 30px; display: flex; align-items: center; color: var(--primary-color); font-size: 1.5em;">→</div>
+                    
+                    <!-- Step 4 -->
+                    <div style="flex: 1; text-align: center; position: relative;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">4</div>
+                        <h4 style="color: var(--primary-color); margin: 5px 0; font-size: 0.95em;">Validate</h4>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0;">Check<br>compliance</p>
+                    </div>
+                    
+                    <div style="flex: 0 0 30px; display: flex; align-items: center; color: var(--primary-color); font-size: 1.5em;">→</div>
+                    
+                    <!-- Step 5 -->
+                    <div style="flex: 1; text-align: center; position: relative;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">5</div>
+                        <h4 style="color: var(--primary-color); margin: 5px 0; font-size: 0.95em;">Generate</h4>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0;">Create<br>documents</p>
+                    </div>
+                    
+                    <div style="flex: 0 0 30px; display: flex; align-items: center; color: var(--primary-color); font-size: 1.5em;">→</div>
+                    
+                    <!-- Step 6 -->
+                    <div style="flex: 1; text-align: center; position: relative;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #00a651 0%, #00c851 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: bold; font-size: 1.2em; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">✓</div>
+                        <h4 style="color: var(--success); margin: 5px 0; font-size: 0.95em;">Confirm</h4>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin: 0;">GP reviews<br>& submits</p>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div style="margin-top: 30px; background: var(--light-bg); padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 0.9em; color: var(--text-secondary);">Total Processing Time</span>
+                        <span style="font-weight: bold; color: var(--primary-color);">&lt; 1 minute</span>
+                    </div>
+                    <div style="height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 100%; background: linear-gradient(90deg, #667eea 0%, #00a651 100%); border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Demo Scenarios -->
+        <section class="section">
+            <h2>🎯 Demonstration Scenarios</h2>
+            
+            <div class="scenarios">
+                <div class="scenario">
+                    <h4>Scenario 1: Standard Consultation</h4>
+                    <div class="scenario-input">
+                        <strong>Input:</strong> "Patient presents with headache for 3 days, tension-type, prescribed paracetamol"<br>
+                        <strong>Duration:</strong> 15 minutes
+                    </div>
+                    <div class="scenario-output">
+                        <span class="label">→ Recommends:</span> Item 23 (Level B consultation)<br>
+                        <span class="label">→ Confidence:</span> High<br>
+                        <span class="label">→ Compliance:</span> ✓ All checks passed
+                    </div>
+                </div>
+                
+                <div class="scenario">
+                    <h4>Scenario 2: Mental Health Assessment</h4>
+                    <div class="scenario-input">
+                        <strong>Input:</strong> "Depression screening, GAD-7 score 12, referred to psychologist"<br>
+                        <strong>Duration:</strong> 25 minutes
+                    </div>
+                    <div class="scenario-output">
+                        <span class="label">→ Recommends:</span> Item 2713 (Mental Health Treatment Plan)<br>
+                        <span class="label">→ Generates:</span> Referral letter, Care plan<br>
+                        <span class="label">→ Confidence:</span> High
+                    </div>
+                </div>
+                
+                <div class="scenario">
+                    <h4>Scenario 3: Chronic Disease Management</h4>
+                    <div class="scenario-input">
+                        <strong>Input:</strong> "Diabetes review, HbA1c 8.2, medication adjustment"<br>
+                        <strong>Duration:</strong> 20 minutes
+                    </div>
+                    <div class="scenario-output">
+                        <span class="label">→ Recommends:</span> Item 732 (GP Management Plan Review)<br>
+                        <span class="label">→ Compliance:</span> ✓ Last plan >3 months ago<br>
+                        <span class="label">→ Documents:</span> Updated care plan
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Innovation Highlights -->
+        <section class="section">
+            <h2>🚀 Innovation Highlights</h2>
+            
+            <div class="innovations">
+                <div class="innovation-card">
+                    <div class="innovation-icon">🔍</div>
+                    <h4>Explainable AI</h4>
+                    <ul>
+                        <li>Why this MBS item was chosen</li>
+                        <li>Which keywords triggered selection</li>
+                        <li>Confidence level reasoning</li>
+                    </ul>
+                </div>
+                
+                <div class="innovation-card">
+                    <div class="innovation-icon">🛡️</div>
+                    <h4>Proactive Compliance</h4>
+                    <ul>
+                        <li>Prevents errors before submission</li>
+                        <li>Educational warnings help GPs</li>
+                        <li>Significantly reduces audit risk</li>
+                    </ul>
+                </div>
+                
+                <div class="innovation-card">
+                    <div class="innovation-icon">⚡</div>
+                    <h4>Time-Saving Metrics</h4>
+                    <ul>
+                        <li>Current: 15-20 minutes</li>
+                        <li>With our system: Under 1 minute</li>
+                        <li>Significant time savings</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Key Metrics -->
+        <section class="section">
+            <h2>📈 Impact Metrics</h2>
+            
+            <div class="metrics">
+                <div class="metric">
+                    <div class="value">90%+</div>
+                    <div class="label">Time Savings</div>
+                </div>
+                <div class="metric">
+                    <div class="value">High</div>
+                    <div class="label">Accuracy Target</div>
+                </div>
+                <div class="metric">
+                    <div class="value">More</div>
+                    <div class="label">Patients Seen</div>
+                </div>
+                <div class="metric">
+                    <div class="value">Significant</div>
+                    <div class="label">Revenue Impact</div>
+                </div>
+                <div class="metric">
+                    <div class="value">Lower</div>
+                    <div class="label">Compliance Risk</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Timeline -->
+        <section class="section">
+            <h2>📅 Competition Timeline</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="week">Day 1-2</span>
+                    <h4>🚀 Rapid Prototyping</h4>
+                    <p>Core UI implementation, workflow design, basic data structures</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="week">Day 3-4</span>
+                    <h4>🧠 AI Integration</h4>
+                    <p>NLP model setup, MBS matching algorithm, basic compliance rules</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="week">Day 5-6</span>
+                    <h4>🔧 Feature Completion</h4>
+                    <p>Document generation, end-to-end workflow, system integration</p>
+                </div>
+                <div class="timeline-item">
+                    <span class="week">Day 7</span>
+                    <h4>✨ Polish & Demo</h4>
+                    <p>Bug fixes, demo preparation, final documentation</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Success Factors -->
+        <section class="section">
+            <h2>🏆 Why This Solution Will Succeed</h2>
+            
+            <div class="success-factors" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
+                <div class="success-factor" data-number="1">
+                    <h4>GP-Centric Design</h4>
+                    <p>Built by understanding actual GP workflows and pain points</p>
+                </div>
+                <div class="success-factor" data-number="2">
+                    <h4>Incremental Adoption</h4>
+                    <p>Works alongside existing systems without disruption</p>
+                </div>
+                <div class="success-factor" data-number="3">
+                    <h4>Immediate ROI</h4>
+                    <p>Pays for itself quickly through time savings</p>
+                </div>
+                <div class="success-factor" data-number="4">
+                    <h4>Scalable Architecture</h4>
+                    <p>Cloud-native design for nationwide deployment</p>
+                </div>
+                <div class="success-factor" data-number="5">
+                    <h4>Continuous Learning</h4>
+                    <p>AI improves with usage and feedback</p>
+                </div>
+                <div class="success-factor" data-number="6">
+                    <h4>Compliance First</h4>
+                    <p>Built-in Medicare rules prevent costly errors</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Team -->
+        <section class="section">
+            <h2>👥 Team Capabilities</h2>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="icon">🏥</div>
+                    <h4>Healthcare Domain</h4>
+                    <p>Understanding of Australian Medicare system and GP workflows</p>
+                </div>
+                <div class="team-member">
+                    <div class="icon">🤖</div>
+                    <h4>AI/NLP Expertise</h4>
+                    <p>Machine learning, natural language processing, pattern recognition</p>
+                </div>
+                <div class="team-member">
+                    <div class="icon">💻</div>
+                    <h4>Full-Stack Development</h4>
+                    <p>Modern web technologies, API design, cloud deployment</p>
+                </div>
+                <div class="team-member">
+                    <div class="icon">📋</div>
+                    <h4>Compliance Knowledge</h4>
+                    <p>Medicare billing regulations, healthcare standards</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2>Transform Medicare Billing Forever</h2>
+                <p class="promise">From consultation to compliant billing in under a minute</p>
+                
+                <div class="cta-metrics">
+                    <div class="cta-metric">
+                        <div class="value">Fast</div>
+                        <div class="label">Processing</div>
+                    </div>
+                    <div class="cta-metric">
+                        <div class="value">Accurate</div>
+                        <div class="label">Matching</div>
+                    </div>
+                    <div class="cta-metric">
+                        <div class="value">Compliant</div>
+                        <div class="label">Validation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <div class="submission-info">
+            <h3>NextGen25 Challenge 8 - Initial Proposal</h3>
+            <p>Submitted: August 25, 2025</p>
+        </div>
+    </div>
+</body>
+</html>
